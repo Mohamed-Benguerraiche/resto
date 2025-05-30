@@ -3,37 +3,39 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-
+const axios = require("axios");
 const app = express();
 const db = new sqlite3.Database('./db.sqlite');
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS lieux (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    ville TEXT NOT NULL,
-    adresse TEXT NOT NULL,
-    code_postal TEXT NOT NULL,
-    telephone TEXT,
-    site_web TEXT,
-    mail TEXT,
+    ville TEXT,
+    adresse TEXT,
     codePostal TEXT,
-    type TEXT NOT NULL CHECK(type IN ('repas suspendus', 'prix libre', 'montant fixe', 'remise')),
-    animaux_acceptes BOOLEAN DEFAULT 0
+    telephone TEXT,
+    siteWeb TEXT,
+    mail TEXT,
+    nomLieu TEXT,
+    type TEXT,
+    animaux INTEGER,
+    latitude REAL,
+    longitude REAL
   )`);
 });
 
-const axios = require("axios"); // à mettre en haut
 
 app.post('/ajouter', async (req, res) => {
   const {
     ville, adresse, codePostal, telephone, siteWeb, mail, nomLieu,
     type, animaux
   } = req.body;
+  console.log("→ Données reçues dans req.body :", req.body);
 
   const fullAddress = `${adresse}, ${codePostal} ${ville}, France`;
   let latitude = 46.603354, longitude = 1.888334; // Coordonnées par défaut (centre de la France)

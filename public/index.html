@@ -4,19 +4,12 @@
   <meta charset="UTF-8">
   <title>Carte des restaurants solidaires</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
   <link
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
   crossorigin=""
 />
 
-[Error: SQLITE_ERROR: table lieux has no column named codePostal
-Emitted 'error' event on Statement instance at:
-] {
-  errno: 1,
-  code: 'SQLITE_ERROR'
-}
   <style>
     #map { width: 100%; height: 90vh; }
   </style>
@@ -25,42 +18,34 @@ Emitted 'error' event on Statement instance at:
   <h1 class="text-center my-3">Carte des lieux solidaires</h1>
   <div id="map" style="height: 90vh; border-radius: 10px;"></div>
 
-  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-  <script>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+<script>
+  const map = L.map('map').setView([46.603354, 1.888334], 6); // Vue initiale
 
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://demotiles.maplibre.org/style.json',
-      center: [2.2137, 46.2276],
-      zoom: 5
-    });
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap France'
+  }).addTo(map);
 
-    async function chargerLieux() {
-      fetch('/lieux')
-  .then(response => response.json())
-  .then(data => {
-    const map = L.map('map').setView([46.603354, 1.888334], 6); // vue initiale
+  fetch('/api/lieux')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(lieu => {
+        if (lieu.latitude && lieu.longitude) {
+          const marker = L.marker([lieu.latitude, lieu.longitude]).addTo(map);
+          marker.bindPopup(`
+            <b>${lieu.nomLieu}</b><br>
+            ${lieu.adresse}, ${lieu.codePostal} ${lieu.ville}<br>
+            Téléphone : ${lieu.telephone}<br>
+            Type : ${lieu.type}<br>
+            Animaux acceptés : ${lieu.animaux ? "Oui" : "Non"}
+          `);
+        }
+      });
+    })
+    .catch(error => console.error("Erreur lors du chargement des lieux :", error));
+</script>
 
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap France'
-    }).addTo(map);
-
-    data.forEach(lieu => {
-      const marker = L.marker([lieu.latitude, lieu.longitude]).addTo(map);
-      marker.bindPopup(`
-        <b>${lieu.nomLieu}</b><br>
-        ${lieu.adresse}, ${lieu.codePostal} ${lieu.ville}<br>
-        Téléphone : ${lieu.telephone}<br>
-        Type : ${lieu.type}<br>
-        Animaux acceptés : ${lieu.animaux ? "Oui" : "Non"}
-      `);
-    });
-  });
-
-    }
-
-    chargerLieux();
   </script>
 </body>
 </html>
