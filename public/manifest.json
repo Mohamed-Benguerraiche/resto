@@ -1,0 +1,16 @@
+{
+    "name": "Restaurants Solidaires",
+    "short_name": "Solidaires",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "icons": [
+      {
+        "src": "icon.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      }
+    ]
+  }
+  
