@@ -1,49 +1,89 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Ajouter un restaurant solidaire</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajouter un lieu solidaire</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container py-4">
-  <h1 class="mb-4">Ajouter un lieu solidaire</h1>
-  <form id="lieuForm">
-    <div class="mb-3"><input name="nom" class="form-control" required placeholder="Nom du lieu"></div>
-    <div class="mb-3"><input name="ville" class="form-control" required placeholder="Ville"></div>
-    <div class="mb-3"><input name="adresse" class="form-control" required placeholder="Adresse"></div>
-    <div class="mb-3"><input name="code_postal" class="form-control" required placeholder="Code Postal"></div>
-    <div class="mb-3"><input name="telephone" class="form-control" placeholder="Téléphone"></div>
-    <div class="mb-3"><input name="site_web" class="form-control" placeholder="Site web"></div>
-    <div class="mb-3"><input name="mail" type="email" class="form-control" placeholder="Adresse mail"></div>
-    <div class="mb-3">
-      <select name="type" class="form-select" required>
-        <option value="">Type de service</option>
-        <option>repas suspendus</option>
-        <option>prix libre</option>
-        <option>montant fixe</option>
-        <option>remise</option>
-      </select>
+  <h1 class="mb-4">Ajouter un Restaurant Solidaire</h1>
+
+  <form action="/ajouter" method="POST" class="needs-validation" novalidate>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="nomLieu" class="form-label">Nom du lieu</label>
+        <input type="text" class="form-control" id="nomLieu" name="nomLieu" required>
+      </div>
+      <div class="col-md-6">
+        <label for="ville" class="form-label">Ville</label>
+        <input type="text" class="form-control" id="ville" name="ville" required>
+      </div>
     </div>
+
+    <div class="row mb-3">
+      <div class="col-md-8">
+        <label for="adresse" class="form-label">Adresse</label>
+        <input type="text" class="form-control" id="adresse" name="adresse" required>
+      </div>
+      <div class="col-md-4">
+        <label for="codePostal" class="form-label">Code Postal</label>
+        <input type="text" class="form-control" id="codePostal" name="codePostal" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="telephone" class="form-label">Téléphone</label>
+        <input type="text" class="form-control" id="telephone" name="telephone">
+      </div>
+      <div class="col-md-6">
+        <label for="mail" class="form-label">Email</label>
+        <input type="email" class="form-control" id="mail" name="mail">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="siteWeb" class="form-label">Site web</label>
+        <input type="url" class="form-control" id="siteWeb" name="siteWeb">
+      </div>
+      <div class="col-md-6">
+        <label for="type" class="form-label">Type de service</label>
+        <select class="form-select" id="type" name="type" required>
+          <option value="">Choisissez...</option>
+          <option value="repas suspendus">Repas suspendus</option>
+          <option value="prix libre">Prix libre</option>
+          <option value="montant fixe">Montant fixe</option>
+          <option value="remise">Remise</option>
+        </select>
+      </div>
+    </div>
+
     <div class="form-check mb-3">
-      <input name="animaux_acceptes" class="form-check-input" type="checkbox" id="animaux">
-      <label class="form-check-label" for="animaux">Animaux acceptés</label>
+      <input class="form-check-input" type="checkbox" id="animaux" name="animaux" value="oui">
+      <label class="form-check-label" for="animaux">
+        Animaux acceptés
+      </label>
     </div>
+
     <button type="submit" class="btn btn-primary">Ajouter</button>
   </form>
 
   <script>
-    document.getElementById('lieuForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(e.target).entries());
-      data.animaux_acceptes = document.querySelector('[name="animaux_acceptes"]').checked;
-      await fetch('/api/lieux', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    (() => {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
       });
-      alert("Lieu ajouté !");
-      e.target.reset();
-    });
+    })();
   </script>
 </body>
 </html>
